@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <title>{{ .title }}</title>
+    <link href="https://cdn.bootcss.com/fullPage.js/2.9.5/jquery.fullpage.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/fullPage.js/2.9.5/jquery.fullpage.min.js"></script>
+  </head>
+  <body>
+    <style>
+     body {
+         /* background: url("http://7xs8ln.com1.z0.glb.clouddn.com/snow.jpg"); */
+         background-repeat: no-repeat;
+         background-attachment: fixed;
+         background-size:100% 100%;
+         font-family: sans-serif;
+     }
+     .slide {
+         color:#555;
+
+     }
+     .intro { 
+         writing-mode: vertical-rl;
+         /* writing-mode: horizontal-tb; */
+         text-orientation: upright;
+         text-transform: uppercase;
+         word-spacing:25px;
+         letter-spacing: 5px;
+         text-align:center;
+         margin:0 auto;
+     }
+     .paragraphs {
+         font-size:24px;
+     }
+    </style>
+    
+    <div id="fullpage">
+      <div class="section">
+        {{ range .poems }}
+		<div class="slide">
+		  <div class="intro">
+			<h2 class="title">{{ .Title }}</h2>
+            <p class="author">{{ .Author }}</p>
+            {{ range .Paragraphs }}
+			<p class="paragraphs">{{ . }}</p>
+            {{ end }}
+		  </div>
+		</div>
+        {{ end }}
+      </div>
+    </div>   
+    <script type="text/template" id="template">
+      <div class="slide">
+        <div class="intro">
+            <h2 class="title">{0}</h2>
+            <p class="author">{1}</p>
+            {2}
+        </div>
+      </div>
+    </script>
+    <script>
+     var page = 1;
+     if (!String.prototype.format) {
+         String.prototype.format = function() {
+             var str = this.toString();
+             if (!arguments.length)
+                 return str;
+             var args = typeof arguments[0],
+                 args = (("string" == args || "number" == args) ? arguments : arguments[0]);
+             for (arg in args)
+                 str = str.replace(RegExp("\\{" + arg + "\\}", "gi"), args[arg]);
+             return str;
+         }
+     }
+     $(document).ready(function() {
+         function Init() {
+	         $('#fullpage').fullpage({
+                 controlArrows: false,
+                 loopHorizontal: false,
+                 afterSlideLoad: function(anchorLink, index, slideAnchor, slideIndex) {
+                     if ((slideIndex + 1) % 10 == 0) {
+                         page = page + 1;
+                         $.get(
+                             '/api/poem',
+                             {page:page},
+                             function(response){
+                                 var text = "";
+                                 response.data.forEach(function(item,index) {
+                                     text = text + $("#template").html().format(item.Title,
+                                                                                item.Author,
+                                                                                item.Paragraphs.reduce(function(pre,nex) {
+                                                                                    return '<p class="paragraphs">{0}</p>'.format(pre) + '<p class="paragraphs">{0}</p>'.format(nex)
+                                                                                }))
+                                 })
+                                 if(slideIndex == 99) {
+                                     $(".section").html(text);
+                                 }else {
+                                     $(".section").append(text);
+                                 }
+                                 $.fn.fullpage.destroy('all');
+                                 $('.slide').eq(slideIndex).addClass('active');
+                                 Init();
+                             }, 'json');
+                     }
+                 }
+             });
+         }
+         Init();
+     });
+     $(document).keydown(function (e) {
+         var keycode = (e.keyCode ? e.keyCode : e.which);
+         if (keycode == 32) {
+             $.fn.fullpage.moveSlideRight();
+         }});
+    </script>
+  </body>
+</html>
