@@ -4,7 +4,7 @@ File Name: poem.go
 Author: jianglin
 Email: xiyang0807@gmail.com
 Created: 2018-01-30 13:39:49 (CST)
-Last Update: 星期三 2018-01-31 01:55:01 (CST)
+Last Update: 星期四 2018-02-01 10:36:00 (CST)
          By:
 Description:
 *********************************************************************************/
@@ -29,6 +29,7 @@ type PGConfiguration struct {
 type Configuration struct {
     PG      *PGConfiguration
     Version string
+    Server  string
 }
 
 var (
@@ -45,29 +46,37 @@ func main() {
     author := Author{Router: route}
     author.Init("/api/author")
 
-    // err := DB.CreateTable(&InventoryModel{},nil)
-    // if err != nil {
-    //     panic(err)
-    // }
     db = pg.Connect(&pg.Options{
         User:     config.PG.User,
         Password: config.PG.Password,
         Database: config.PG.Database,
     })
 
-    route.Run("127.0.0.1:8000") // listen and serve on 0.0.0.0:8080
+    route.Run(config.Server)
+}
+
+func initdb() {
+    for _, model := range []interface{}{&PoemModel{}, &AuthorModel{}} {
+        err := db.CreateTable(model, nil)
+        if err != nil {
+            panic(err)
+        }
+    }
+    os.Exit(0)
 }
 
 func init() {
     var (
-        conf_file string
+        conf      string
         print_ver bool
+        db_init   bool
     )
-    flag.StringVar(&conf_file, "c", "config.json", "config file")
+    flag.StringVar(&conf, "c", "config.json", "config file")
     flag.BoolVar(&print_ver, "v", false, "get version")
+    flag.BoolVar(&db_init, "initdb", false, "init db")
     flag.Parse()
 
-    raw, err := ioutil.ReadFile(conf_file)
+    raw, err := ioutil.ReadFile(conf)
     if err != nil {
         fmt.Println(err)
         os.Exit(1)
@@ -81,5 +90,8 @@ func init() {
     if print_ver {
         fmt.Println("version:", config.Version)
         os.Exit(0)
+    }
+    if db_init {
+        initdb()
     }
 }

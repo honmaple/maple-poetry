@@ -4,7 +4,7 @@ File Name: router.go
 Author: jianglin
 Email: xiyang0807@gmail.com
 Created: 2018-01-30 13:41:18 (CST)
-Last Update: 星期三 2018-01-31 01:46:00 (CST)
+Last Update: 星期三 2018-01-31 11:53:14 (CST)
          By:
 Description:
 *********************************************************************************/
@@ -35,7 +35,10 @@ func (self *Poem) GETHTML(c *gin.Context) {
     if err != nil {
         panic(err)
     }
-    new_poems := PoemModel{}.ToJson(poems)
+    new_poems := []P{}
+    for _, poem := range poems {
+        new_poems = append(new_poems, poem.ToJSON())
+    }
     c.HTML(http.StatusOK, "poem.html", gin.H{
         "title": "Poem",
         "poems": new_poems,
@@ -65,7 +68,10 @@ func (self *Poem) GET(c *gin.Context) {
     if err != nil {
         panic(err)
     }
-    new_poems := PoemModel{}.ToJson(poems)
+    new_poems := []P{}
+    for _, poem := range poems {
+        new_poems = append(new_poems, poem.ToJSON())
+    }
 
     c.JSON(200, gin.H{
         "message": "pong",
@@ -89,7 +95,7 @@ func (self *Poem) GETITEM(c *gin.Context) {
     }
     c.JSON(200, gin.H{
         "message": "pong",
-        "data":    poem,
+        "data":    poem.ToJSON(),
     })
 }
 
