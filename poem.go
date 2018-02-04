@@ -4,7 +4,7 @@ File Name: poem.go
 Author: jianglin
 Email: xiyang0807@gmail.com
 Created: 2018-01-30 13:39:49 (CST)
-Last Update: 星期四 2018-02-01 10:36:00 (CST)
+Last Update: 星期日 2018-02-04 23:56:25 (CST)
          By:
 Description:
 *********************************************************************************/
@@ -30,6 +30,7 @@ type Configuration struct {
     PG      *PGConfiguration
     Version string
     Server  string
+    Debug   bool
 }
 
 var (
@@ -38,7 +39,11 @@ var (
 )
 
 func main() {
+    if config.Debug == false {
+        gin.SetMode(gin.ReleaseMode)
+    }
     route := gin.Default()
+    route.Static("/static", "./static")
     route.LoadHTMLGlob("templates/*")
     poem := Poem{Router: route}
     poem.Init("/api/poem")

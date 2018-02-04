@@ -1,0 +1,23 @@
+body {
+    background: url("http://7xs8ln.com1.z0.glb.clouddn.com/image/background/jpg/poem.jpg");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size:100% 100%;
+    font-family: sans-serif;
+}
+.slide {
+    color:#3A3C38;
+
+}
+.intro { 
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    text-transform: uppercase;
+    word-spacing:25px;
+    letter-spacing: 5px;
+    text-align:center;
+    margin:0 auto;
+}
+.paragraphs {
+    font-size:24px;
+}

@@ -4,7 +4,7 @@ File Name: router.go
 Author: jianglin
 Email: xiyang0807@gmail.com
 Created: 2018-01-30 13:41:18 (CST)
-Last Update: 星期三 2018-01-31 11:53:14 (CST)
+Last Update: 星期五 2018-02-02 19:04:36 (CST)
          By:
 Description:
 *********************************************************************************/
@@ -13,8 +13,10 @@ package main
 import (
     "github.com/gin-gonic/gin"
     // "github.com/go-pg/pg/orm"
+    "math/rand"
     "net/http"
     "strconv"
+    "time"
 )
 
 type Poem struct {
@@ -64,7 +66,9 @@ func (self *Poem) GET(c *gin.Context) {
         })
         return
     }
-    err = db.Model(&poems).Offset(int((page - 1) * offset)).Limit(int(offset)).Select()
+    rand.Seed(time.Now().UnixNano())
+    // 311828
+    err = db.Model(&poems).Offset(int((page-1)*offset) + rand.Intn(1000)).Limit(int(offset)).Select()
     if err != nil {
         panic(err)
     }
