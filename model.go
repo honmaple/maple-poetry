@@ -4,7 +4,7 @@ File Name: model.go
 Author: jianglin
 Email: xiyang0807@gmail.com
 Created: 2018-01-30 14:13:43 (CST)
-Last Update: 星期四 2018-02-01 10:35:41 (CST)
+Last Update: 星期一 2018-02-05 00:17:53 (CST)
          By:
 Description:
 *********************************************************************************/
@@ -65,4 +65,16 @@ type AuthorModel struct {
     Id          int64
     Name        string
     Description string
+}
+
+type A struct {
+    Name        string
+    Description string
+}
+
+func (self *AuthorModel) ToJSON() A {
+    return A{
+        Name:        self.Name,
+        Description: self.Description,
+    }
 }

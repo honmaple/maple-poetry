@@ -2,36 +2,34 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8"/>
-    <title>Peom</title>
+    <title>{{ .title }}</title>
     <link href="https://cdn.bootcss.com/fullPage.js/2.9.5/jquery.fullpage.min.css" rel="stylesheet">
-    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdn.bootcss.com/fullPage.js/2.9.5/jquery.fullpage.min.js"></script>
+    <link href="/static/css/poem.css" type="text/css" rel="stylesheet" />
   </head>
   <body>
     <div id="fullpage">
-      <div class="section" id="section1">
+      <div class="section">
+        {{ range .authors }}
 		<div class="slide">
 		  <div class="intro">
-			<h1>Create Sliders</h1>
-			<p>Not only vertical scrolling but also horizontal scrolling. With fullPage.js you will be able to add horizontal sliders in the most simple way ever.</p>
-			<img src="imgs/slider.png" alt="slider" />
-		  </div>
-
-		</div>
-		<div class="slide">
-		  <div class="intro">
-			<img src="imgs/1.png" alt="simple" />
-			<h1>Simple</h1>
-			<p>Easy to use. Configurable and customizable.</p>
+			<h2 class="title">{{ .Name }}</h2>
+			<p class="paragraphs">{{ .Description }}</p>
 		  </div>
 		</div>
+        {{ end }}
       </div>
     </div>   
-	  <div class="section">Some section</div>
-    <script>
-     $(document).ready(function() {
-	     $('#fullpage').fullpage();
-     });
+    <script type="text/template" id="template">
+      <div class="slide">
+        <div class="intro">
+            <h2 class="title">{0}</h2>
+            <p class="author">{1}</p>
+            {2}
+        </div>
+      </div>
     </script>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/fullPage.js/2.9.5/jquery.fullpage.min.js"></script>
+    <script src="/static/js/poem.js"></script>
   </body>
 </html>

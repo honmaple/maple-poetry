@@ -4,7 +4,7 @@ File Name: router.go
 Author: jianglin
 Email: xiyang0807@gmail.com
 Created: 2018-01-30 13:41:18 (CST)
-Last Update: 星期五 2018-02-02 19:04:36 (CST)
+Last Update: 星期一 2018-02-05 01:30:54 (CST)
          By:
 Description:
 *********************************************************************************/
@@ -29,7 +29,7 @@ func (self *Poem) Init(prefix string) {
         api.GET("", self.GET)
         api.GET("/:pk", self.GETITEM)
     }
-    self.Router.GET("/poem", self.GETHTML)
+    self.Router.GET("/", self.GETHTML)
 }
 func (self *Poem) GETHTML(c *gin.Context) {
     var poems []PoemModel
@@ -117,8 +117,18 @@ func (self *Author) Init(prefix string) {
 }
 
 func (self *Author) GETHTML(c *gin.Context) {
+    var authors []AuthorModel
+    err := db.Model(&authors).Limit(10).Select()
+    if err != nil {
+        panic(err)
+    }
+    new_authors := []A{}
+    for _, author := range authors {
+        new_authors = append(new_authors, author.ToJSON())
+    }
     c.HTML(http.StatusOK, "author.html", gin.H{
-        "title": "Main website",
+        "title": "Author",
+        "authors": new_authors,
     })
 }
 
