@@ -6,10 +6,10 @@ body {
     font-family: sans-serif;
 }
 .slide {
-    color:#3A3C38;
+    color:#D3C6B5;
 
 }
-.intro { 
+.intro {
     writing-mode: vertical-rl;
     text-orientation: upright;
     text-transform: uppercase;

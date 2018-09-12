@@ -15,11 +15,11 @@ if (!String.prototype.format) {
 $(document).ready(function() {
     var page = 1;
     function Init() {
-	    $('#fullpage').fullpage({
+        $('#fullpage').fullpage({
             controlArrows: false,
             loopHorizontal: false,
             afterSlideLoad: function(anchorLink, index, slideAnchor, slideIndex) {
-                if ((slideIndex + 1) % 10 == 0) {
+                if ((slideIndex + 1) % 10 === 0) {
                     page = page + 1;
                     $.get(
                         '/api/poem',
@@ -27,11 +27,13 @@ $(document).ready(function() {
                         function(response){
                             var text = "";
                             response.data.forEach(function(item,index) {
-                                text = text + $("#template").html().format(item.Title,
-                                                                           item.Author,
-                                                                           item.Paragraphs.reduce(function(pre,nex) {
-                                                                               return '<p class="paragraphs">{0}</p>'.format(pre) + '<p class="paragraphs">{0}</p>'.format(nex)
-                                                                           }));
+                                text = text + $("#template")
+                                    .html()
+                                    .format(item.title,
+                                            item.author,
+                                            item.paragraphs.reduce(function(pre,nex) {
+                                                return '<p class="paragraphs">{0}</p>'.format(pre) + '<p class="paragraphs">{0}</p>'.format(nex);
+                                            }));
                             });
                             if(slideIndex == 99) {
                                 $(".section").html(text);

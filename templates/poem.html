@@ -12,18 +12,18 @@
     <div id="fullpage">
       <div class="section">
         {{ range .poems }}
-		<div class="slide">
-		  <div class="intro">
-			<h2 class="title">{{ .Title }}</h2>
-            <p class="author">{{ .Author }}</p>
-            {{ range .Paragraphs }}
-			<p class="paragraphs">{{ . }}</p>
+        <div class="slide">
+          <div class="intro">
+            <h2 class="title">{{ .title }}</h2>
+            <p class="author">{{ .author }}</p>
+            {{ range .paragraphs }}
+            <p class="paragraphs">{{ . }}</p>
             {{ end }}
-		  </div>
-		</div>
+          </div>
+        </div>
         {{ end }}
       </div>
-    </div>   
+    </div>
     <script type="text/template" id="template">
       <div class="slide">
         <div class="intro">
