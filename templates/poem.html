@@ -9,15 +9,20 @@
     <link href="/static/css/poem.css" type="text/css" rel="stylesheet" />
   </head>
   <body>
+    <style>
+     .poem-intro {
+         letter-spacing: 0.2em;
+     }
+    </style>
     <div id="fullpage">
       <div class="section">
         {{ range .poems }}
         <div class="slide">
-          <div class="intro">
-            <h2 class="title">{{ .title }}</h2>
-            <p class="author">{{ .author }}</p>
+          <div class="poem-intro">
+            <h2 class="poem-title">{{ .title }}</h2>
+            <p class="poem-author">{{ .author }}</p>
             {{ range .paragraphs }}
-            <p class="paragraphs">{{ . }}</p>
+            <p class="poem-paragraph">{{ . }}</p>
             {{ end }}
           </div>
         </div>
@@ -26,9 +31,9 @@
     </div>
     <script type="text/template" id="template">
       <div class="slide">
-        <div class="intro">
-            <h2 class="title">{0}</h2>
-            <p class="author">{1}</p>
+        <div class="poem-intro">
+            <h2 class="poem-title">{0}</h2>
+            <p class="poem-author">{1}</p>
             {2}
         </div>
       </div>

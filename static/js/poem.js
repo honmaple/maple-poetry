@@ -12,6 +12,44 @@ if (!String.prototype.format) {
         return str;
     };
 }
+function Replace() {
+    var points = ["，", "。"];
+    var chars = ["一"];
+    var brackets = [
+        ["（", "︵"],
+        ["）", "︶"],
+        ["{", "︷"],
+        ["}", "︸"],
+        ["\\[", "︻"],
+        ["\\]", "︼"],
+        ["《", "︽"],
+        ["》", "︾"],
+        ["“", "﹃"],
+        ["”", "﹄"],
+        ["‘", "﹁"],
+        ["’", "﹂"],
+        ["——", "｜"]
+    ];
+    function replace(elements) {
+        Array.from(elements).forEach(function(element) {
+            var text = element.innerText;
+            points.forEach(function(point) {
+                text = text.replace(new RegExp(point, "g"),'<span class="poem-point">' + point + '</span>');
+            });
+            chars.forEach(function(char) {
+                text = text.replace(new RegExp(char, "g"),'<span class="poem-char">' + char + '</span>');
+            });
+            brackets.forEach(function(bracket) {
+                text = text.replace(new RegExp(bracket[0], "g"),bracket[1]);
+            });
+            element.innerHTML = text;
+        });
+    }
+    var paragraphs = document.getElementsByClassName("poem-paragraph");
+    var titles = document.getElementsByClassName("poem-title");
+    replace(paragraphs);
+    replace(titles);
+}
 $(document).ready(function() {
     var page = 1;
     function Init() {
@@ -32,7 +70,7 @@ $(document).ready(function() {
                                     .format(item.title,
                                             item.author,
                                             item.paragraphs.reduce(function(pre,nex) {
-                                                return '<p class="paragraphs">{0}</p>'.format(pre) + '<p class="paragraphs">{0}</p>'.format(nex);
+                                                return '<p class="poem-paragraph">{0}</p>'.format(pre) + '<p class="poem-paragraph">{0}</p>'.format(nex);
                                             }));
                             });
                             if(slideIndex == 99) {
@@ -51,6 +89,7 @@ $(document).ready(function() {
         });
     }
     Init();
+    Replace();
 });
 $(document).keydown(function (e) {
     var keycode = (e.keyCode ? e.keyCode : e.which);

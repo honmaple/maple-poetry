@@ -4,7 +4,7 @@
  Author: jianglin
  Email: mail@honmaple.com
  Created: 2018-09-03 16:00:48 (CST)
- Last Update: Wednesday 2018-09-12 15:45:32 (CST)
+ Last Update: Friday 2018-10-26 13:16:03 (CST)
 		  By:
  Description:
  *********************************************************************************/
@@ -12,10 +12,9 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"math/rand"
 	"net/http"
 	"strconv"
-	"time"
+	"strings"
 )
 
 // PoemAPI ..
@@ -25,7 +24,7 @@ type PoemAPI struct {
 // GETHTML ..
 func (api *PoemAPI) GETHTML(c *gin.Context) {
 	ins := make([]*Poem, 0)
-	err := db.Model(&ins).Limit(10).Select()
+	err := db.Model(&ins).Where("random() < ?", 0.01).Limit(10).Select()
 	if err != nil {
 		HTTP{c}.ServerError("", nil)
 		return
@@ -37,25 +36,28 @@ func (api *PoemAPI) GETHTML(c *gin.Context) {
 	})
 }
 
+// RANDOM ..
+func (api *PoemAPI) RANDOM(c *gin.Context) {
+	ins := new(Poem)
+	err := db.Model(ins).Where("random() < ?", 0.01).Limit(1).Select()
+	if err != nil {
+		HTTP{c}.ServerError("", nil)
+	}
+	HTTP{c}.OK("", ins.Serializer())
+}
+
 // GET ..
 func (api *PoemAPI) GET(c *gin.Context) {
 	ins := make([]*Poem, 0)
 
-	offset, err := strconv.ParseInt(c.DefaultQuery("offset", "10"), 10, 64)
-	if err != nil || offset > 100 {
+	limit, err := strconv.ParseInt(c.DefaultQuery("limit", "10"), 10, 64)
+	if err != nil || limit > 100 {
 		HTTP{c}.BadRequest("", nil)
 		return
 	}
-	page, err := strconv.ParseInt(c.DefaultQuery("page", "1"), 10, 64)
+	err = db.Model(&ins).Where("random() < ?", 0.01).Limit(int(limit)).Select()
 	if err != nil {
-		HTTP{c}.BadRequest("", nil)
-		return
-	}
-	rand.Seed(time.Now().UnixNano())
-	// 311828
-	err = db.Model(&ins).Offset(int((page-1)*offset) + rand.Intn(1000)).Limit(int(offset)).Select()
-	if err != nil {
-		panic(err)
+		HTTP{c}.ServerError("", nil)
 	}
 
 	serializer := PoemSerializer{Instances: ins}
@@ -86,7 +88,7 @@ type AuthorAPI struct {
 // GETHTML ..
 func (api *AuthorAPI) GETHTML(c *gin.Context) {
 	ins := make([]*Author, 0)
-	err := db.Model(&ins).Limit(10).Select()
+	err := db.Model(&ins).Where("random() < ?", 0.01).Limit(10).Select()
 	if err != nil {
 		HTTP{c}.ServerError("", nil)
 	}
@@ -97,23 +99,27 @@ func (api *AuthorAPI) GETHTML(c *gin.Context) {
 	})
 }
 
+// RANDOM ..
+func (api *AuthorAPI) RANDOM(c *gin.Context) {
+	ins := new(Author)
+	err := db.Model(ins).Where("random() < ?", 0.01).Limit(1).Select()
+	if err != nil {
+		HTTP{c}.ServerError("", nil)
+	}
+	HTTP{c}.OK("", ins.Serializer())
+}
+
 // GET ..
 func (api *AuthorAPI) GET(c *gin.Context) {
 	ins := make([]*Author, 0)
-	offset, err := strconv.ParseInt(c.DefaultQuery("offset", "10"), 10, 64)
-	if err != nil || offset > 100 {
-		HTTP{c}.BadRequest("offset param error", nil)
+	limit, err := strconv.ParseInt(c.DefaultQuery("limit", "10"), 10, 64)
+	if err != nil || limit > 100 {
+		HTTP{c}.BadRequest("", nil)
 		return
 	}
-
-	page, err := strconv.ParseInt(c.DefaultQuery("page", "1"), 10, 64)
+	err = db.Model(&ins).Where("random() < ?", 0.01).Limit(int(limit)).Select()
 	if err != nil {
-		HTTP{c}.BadRequest("page param error", nil)
-		return
-	}
-	err = db.Model(&ins).Offset(int((page - 1) * offset)).Limit(int(offset)).Select()
-	if err != nil {
-		panic(err)
+		HTTP{c}.ServerError("", nil)
 	}
 
 	serializer := AuthorSerializer{Instances: ins}
@@ -142,7 +148,13 @@ func (api *PoemAPI) Init(router *gin.Engine, prefix string) {
 	r := router.Group(prefix)
 	{
 		r.GET("", api.GET)
-		r.GET("/:pk", api.GETITEM)
+		r.GET("/:pk", func(c *gin.Context) {
+			if strings.HasPrefix(c.Request.RequestURI, prefix+"/random") {
+				api.RANDOM(c)
+				return
+			}
+			api.GETITEM(c)
+		})
 	}
 	router.GET("/", api.GETHTML)
 	router.GET("/poem", api.GETHTML)
@@ -153,7 +165,13 @@ func (api *AuthorAPI) Init(router *gin.Engine, prefix string) {
 	r := router.Group(prefix)
 	{
 		r.GET("", api.GET)
-		r.GET("/:pk", api.GETITEM)
+		r.GET("/:pk", func(c *gin.Context) {
+			if strings.HasPrefix(c.Request.RequestURI, prefix+"/random") {
+				api.RANDOM(c)
+				return
+			}
+			api.GETITEM(c)
+		})
 	}
 	router.GET("/author", api.GETHTML)
 }

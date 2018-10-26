@@ -1,6 +1,5 @@
 <!doctype html>
-<html lang="en">
-
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,26 +8,14 @@
     <link href="https://cdn.bootcss.com/fullPage.js/2.9.5/jquery.fullpage.min.css" rel="stylesheet">
     <link href="/static/css/poem.css" type="text/css" rel="stylesheet" />
   </head>
-
   <body>
     <div id="fullpage">
       <div class="section">
         {{ range .authors }}
         <div class="slide">
-          <div class="intro">
-            <h2 class="title">{{ .name }}</h2>
-            <div class="aaaa">
-              <p class="paragraphs">{{ .description }}</p>
-              <p class="paragraphs">{{ .description }}</p>
-              <p class="paragraphs">{{ .description }}</p>
-              <p class="paragraphs">{{ .description }}</p>
-            </div>
-            <li style="padding:0 20px;border-left:1px solid #666;border-right:1px solid #666;">
-              <a href="">
-                <span class="item-count"><b>100</b></span>
-                <span class="item-name">category</span>
-              </a>
-            </li>
+          <div class="poem-intro">
+            <h2 class="poem-title">{{ .author }}</h2>
+            <p class="poem-paragraph">{{ .desc }}</p>
           </div>
         </div>
         {{ end }}
@@ -36,9 +23,9 @@
     </div>
     <script type="text/template" id="template">
         <div class="slide">
-            <div class="intro">
-                <h2 class="title">{0}</h2>
-                <p class="author">{1}</p>
+            <div class="poem-intro">
+                <h2 class="poem-title">{0}</h2>
+                <p class="poem-paragraph">{1}</p>
                 {2}
             </div>
         </div>
@@ -47,5 +34,4 @@
     <script src="https://cdn.bootcss.com/fullPage.js/2.9.5/jquery.fullpage.min.js"></script>
     <script src="/static/js/poem.js"></script>
   </body>
-
 </html>

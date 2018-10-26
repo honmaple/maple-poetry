@@ -4,7 +4,7 @@ File Name: main.go
 Author: jianglin
 Email: xiyang0807@gmail.com
 Created: 2018-01-30 13:39:49 (CST)
-Last Update: Wednesday 2018-09-12 15:45:13 (CST)
+Last Update: Friday 2018-10-26 13:13:20 (CST)
 		 By:
 Description:
 *********************************************************************************/
@@ -30,9 +30,17 @@ type PGConfiguration struct {
 	Database string
 }
 
+// CORSConfiguration ..
+type CORSConfiguration struct {
+	AllowOrigin string `json:"allow_origin"`
+	AllowMethod string `json:"allow_method"`
+	AllowHeader string `json:"allow_header"`
+}
+
 // Configuration ..
 type Configuration struct {
 	PG     *PGConfiguration
+	CORS   *CORSConfiguration
 	Server string
 	Debug  bool
 }
@@ -42,12 +50,31 @@ var (
 	config Configuration
 )
 
+// CORSMiddleware ..
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", config.CORS.AllowOrigin)
+		c.Writer.Header().Set("Access-Control-Allow-Headers", config.CORS.AllowHeader)
+		c.Writer.Header().Set("Access-Control-Allow-Methods", config.CORS.AllowMethod)
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "false")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
+}
+
 // main ..
 func main() {
 	if config.Debug == false {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	r := gin.Default()
+	r.Use(CORSMiddleware())
+
 	r.Static("/static", "./static")
 	r.LoadHTMLGlob("templates/*")
 
@@ -66,8 +93,8 @@ func main() {
 	r.Run(config.Server)
 }
 
-// InitDB ..
-func InitDB() {
+// initDB ..
+func initDB() {
 	for _, model := range []interface{}{&Poem{}, &Author{}} {
 		err := db.CreateTable(model, nil)
 		if err != nil {
@@ -106,6 +133,6 @@ func init() {
 	}
 
 	if initdb {
-		InitDB()
+		initDB()
 	}
 }

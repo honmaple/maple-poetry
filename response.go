@@ -4,7 +4,7 @@
  Author: jianglin
  Email: mail@honmaple.com
  Created: 2018-09-12 15:38:10 (CST)
- Last Update: Wednesday 2018-09-12 15:53:08 (CST)
+ Last Update: Friday 2018-10-26 11:01:02 (CST)
 		  By:
  Description:
  *********************************************************************************/
@@ -16,7 +16,7 @@ import (
 
 // HTTPResponse ..
 type HTTPResponse struct {
-	StatucCode int
+	StatusCode int
 	Message    string
 	Data       interface{}
 	PageInfo   int
@@ -28,7 +28,7 @@ func (self *HTTPResponse) Raw() interface{} {
 		"message":     self.Message,
 		"data":        self.Data,
 		"pageinfo":    self.PageInfo,
-		"status_code": self.StatucCode,
+		"status_code": self.StatusCode,
 	}
 }
 
@@ -41,7 +41,7 @@ func (self *HTTPResponse) Render(c *gin.Context) {
 	if self.PageInfo != 0 {
 		d["pageinfo"] = self.PageInfo
 	}
-	c.JSON(self.StatucCode, d)
+	c.JSON(self.StatusCode, d)
 }
 
 // HTTP ..
@@ -55,7 +55,7 @@ func (self HTTP) OK(message string, data interface{}) {
 		message = "ok"
 	}
 	resp := HTTPResponse{
-		StatucCode: 200,
+		StatusCode: 200,
 		Message:    message,
 		Data:       data,
 	}
@@ -68,7 +68,7 @@ func (self HTTP) BadRequest(message string, data interface{}) {
 		message = "bad request"
 	}
 	resp := HTTPResponse{
-		StatucCode: 400,
+		StatusCode: 400,
 		Message:    message,
 		Data:       data,
 	}
@@ -81,7 +81,7 @@ func (self HTTP) UnAuthorized(message string, data interface{}) {
 		message = "unauthorized"
 	}
 	resp := HTTPResponse{
-		StatucCode: 401,
+		StatusCode: 401,
 		Message:    message,
 		Data:       data,
 	}
@@ -94,7 +94,7 @@ func (self HTTP) Forbidden(message string, data interface{}) {
 		message = "forbidden"
 	}
 	resp := HTTPResponse{
-		StatucCode: 403,
+		StatusCode: 403,
 		Message:    message,
 		Data:       data,
 	}
@@ -107,7 +107,7 @@ func (self HTTP) NotFound(message string, data interface{}) {
 		message = "not found"
 	}
 	resp := HTTPResponse{
-		StatucCode: 404,
+		StatusCode: 404,
 		Message:    message,
 		Data:       data,
 	}
@@ -120,7 +120,7 @@ func (self HTTP) ServerError(message string, data interface{}) {
 		message = "internal server error"
 	}
 	resp := HTTPResponse{
-		StatucCode: 500,
+		StatusCode: 500,
 		Message:    message,
 		Data:       data,
 	}

@@ -1,23 +1,39 @@
 body {
-    background: url("http://7xs8ln.com1.z0.glb.clouddn.com/image/background/jpg/poem.jpg");
+    background: url("https://honmaple.b0.upaiyun.com/images/background/poem.jpg");
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size:100% 100%;
-    font-family: sans-serif;
 }
 .slide {
     color:#D3C6B5;
-
 }
-.intro {
+.poem-intro {
+    font-size: 1.2em;
     writing-mode: vertical-rl;
     text-orientation: upright;
     text-transform: uppercase;
-    word-spacing:25px;
-    letter-spacing: 5px;
+    letter-spacing: 0.2em;
+    line-height:1.2em;
     text-align:center;
-    margin:0 auto;
+    margin:8% auto;
 }
-.paragraphs {
-    font-size:24px;
+.poem-title {
+    font-size: 1.2em;
+}
+.poem-paragraph {
+    text-align: justify;
+    text-justify: ideographic;
+    text-indent: 2.4em;
+    word-break: break-all;
+}
+.poem-point {
+    margin-top:0.7em;
+    margin-bottom:-0.7em;
+    letter-spacing: 0.2em;
+    position: relative;
+    left: 5px;
+}
+.poem-char {
+    margin-top:0.7em;
+    margin-bottom:-0.7em;
 }
