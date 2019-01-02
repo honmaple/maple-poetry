@@ -2,9 +2,9 @@
 Copyright © 2018 jianglin
 File Name: main.go
 Author: jianglin
-Email: xiyang0807@gmail.com
+Email: mail@honmaple.com
 Created: 2018-01-30 13:39:49 (CST)
-Last Update: Friday 2018-10-26 13:13:20 (CST)
+Last Update: Tuesday 2018-12-25 13:42:39 (CST)
 		 By:
 Description:
 *********************************************************************************/
@@ -18,6 +18,7 @@ import (
 	"github.com/go-pg/pg"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 // VERSION ..
@@ -32,9 +33,10 @@ type PGConfiguration struct {
 
 // CORSConfiguration ..
 type CORSConfiguration struct {
-	AllowOrigin string `json:"allow_origin"`
-	AllowMethod string `json:"allow_method"`
-	AllowHeader string `json:"allow_header"`
+	AllowOrigin []string `json:"allow_origin"`
+	AllowMethod []string `json:"allow_method"`
+	AllowHeader []string `json:"allow_header"`
+	AllowLocal  bool     `json:"allow_local"`
 }
 
 // Configuration ..
@@ -50,12 +52,34 @@ var (
 	config Configuration
 )
 
+func checkOrigin(requestOrigin string) bool {
+	if config.CORS.AllowLocal && (strings.HasPrefix(requestOrigin, "http://127.0.0.1") || strings.HasPrefix(requestOrigin, "http://localhost")) {
+		return true
+	}
+	for _, origin := range config.CORS.AllowOrigin {
+		if !strings.HasPrefix(origin, "http") {
+			if "http://"+origin == requestOrigin {
+				return true
+			}
+			if "https://"+origin == requestOrigin {
+				return true
+			}
+		} else if origin == requestOrigin {
+			return true
+		}
+	}
+	return false
+}
+
 // CORSMiddleware ..
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", config.CORS.AllowOrigin)
-		c.Writer.Header().Set("Access-Control-Allow-Headers", config.CORS.AllowHeader)
-		c.Writer.Header().Set("Access-Control-Allow-Methods", config.CORS.AllowMethod)
+		requestOrigin := c.Request.Header.Get("Origin")
+		if checkOrigin(requestOrigin) {
+			c.Writer.Header().Set("Access-Control-Allow-Origin", requestOrigin)
+		}
+		c.Writer.Header().Set("Access-Control-Allow-Headers", strings.Join(config.CORS.AllowHeader, ","))
+		c.Writer.Header().Set("Access-Control-Allow-Methods", strings.Join(config.CORS.AllowMethod, ","))
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "false")
 
 		if c.Request.Method == "OPTIONS" {

@@ -4,7 +4,7 @@
  Author: jianglin
  Email: mail@honmaple.com
  Created: 2018-09-03 16:00:48 (CST)
- Last Update: Friday 2018-10-26 13:16:03 (CST)
+ Last Update: Tuesday 2018-12-25 13:38:09 (CST)
 		  By:
  Description:
  *********************************************************************************/
@@ -29,10 +29,10 @@ func (api *PoemAPI) GETHTML(c *gin.Context) {
 		HTTP{c}.ServerError("", nil)
 		return
 	}
-	serializer := PoemSerializer{Instances: ins}
+
 	c.HTML(http.StatusOK, "poem.html", gin.H{
 		"title": "Poem",
-		"poems": serializer.Data(),
+		"poems": Serializer(ins),
 	})
 }
 
@@ -60,8 +60,7 @@ func (api *PoemAPI) GET(c *gin.Context) {
 		HTTP{c}.ServerError("", nil)
 	}
 
-	serializer := PoemSerializer{Instances: ins}
-	HTTP{c}.OK("", serializer.Data())
+	HTTP{c}.OK("", Serializer(ins))
 }
 
 // GETITEM ..
@@ -77,8 +76,7 @@ func (api *PoemAPI) GETITEM(c *gin.Context) {
 		HTTP{c}.ServerError("", nil)
 	}
 
-	serializer := PoemSerializer{Instance: &ins}
-	HTTP{c}.OK("", serializer.Data())
+	HTTP{c}.OK("", Serializer(ins))
 }
 
 // AuthorAPI ..
@@ -92,10 +90,9 @@ func (api *AuthorAPI) GETHTML(c *gin.Context) {
 	if err != nil {
 		HTTP{c}.ServerError("", nil)
 	}
-	serializer := AuthorSerializer{Instances: ins}
 	c.HTML(http.StatusOK, "author.html", gin.H{
 		"title":   "Author",
-		"authors": serializer.Data(),
+		"authors": Serializer(ins),
 	})
 }
 
@@ -122,8 +119,7 @@ func (api *AuthorAPI) GET(c *gin.Context) {
 		HTTP{c}.ServerError("", nil)
 	}
 
-	serializer := AuthorSerializer{Instances: ins}
-	HTTP{c}.OK("", serializer.Data())
+	HTTP{c}.OK("", Serializer(ins))
 }
 
 // GETITEM ..
@@ -139,8 +135,7 @@ func (api *AuthorAPI) GETITEM(c *gin.Context) {
 		HTTP{c}.ServerError("", nil)
 	}
 
-	serializer := AuthorSerializer{Instance: &ins}
-	HTTP{c}.OK("", serializer.Data())
+	HTTP{c}.OK("", Serializer(ins))
 }
 
 // Init ..

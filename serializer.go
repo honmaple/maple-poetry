@@ -4,46 +4,32 @@
  Author: jianglin
  Email: mail@honmaple.com
  Created: 2018-09-12 15:04:57 (CST)
- Last Update: Monday 2018-10-22 11:52:08 (CST)
+ Last Update: Tuesday 2018-12-25 13:35:07 (CST)
 		  By:
  Description:
  *********************************************************************************/
 package main
 
-// PoemSerializer ..
-type PoemSerializer struct {
-	Instances []*Poem
-	Instance  *Poem
+import (
+	"reflect"
+)
+
+// SerializerType ..
+type SerializerType interface {
+	Serializer() map[string]interface{}
 }
 
-// Data ..
-func (s *PoemSerializer) Data() []map[string]interface{} {
-	ins := make([]map[string]interface{}, 0)
-	if s.Instances != nil {
-		for _, instance := range s.Instances {
-			ins = append(ins, instance.Serializer())
+// Serializer ..
+func Serializer(instance interface{}) interface{} {
+	switch reflect.TypeOf(instance).Kind() {
+	case reflect.Slice:
+		v := reflect.ValueOf(instance)
+		ins := make([]map[string]interface{}, v.Len())
+		for i := 0; i < v.Len(); i++ {
+			ins[i] = v.Index(i).Interface().(SerializerType).Serializer()
 		}
 		return ins
+	default:
+		return instance.(SerializerType).Serializer()
 	}
-	ins = append(ins, s.Instance.Serializer())
-	return ins
-}
-
-// AuthorSerializer ..
-type AuthorSerializer struct {
-	Instances []*Author
-	Instance  *Author
-}
-
-// Data ..
-func (s *AuthorSerializer) Data() []map[string]interface{} {
-	ins := make([]map[string]interface{}, 0)
-	if s.Instances != nil {
-		for _, instance := range s.Instances {
-			ins = append(ins, instance.Serializer())
-		}
-		return ins
-	}
-	ins = append(ins, s.Instance.Serializer())
-	return ins
 }
