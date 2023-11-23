@@ -1,0 +1,16 @@
+server:
+  addr: ":8000"
+  mode: "dev"
+  cors:
+    allow_origins:
+      - "*"
+    allow_methods:
+      - "*"
+    allow_headers:
+      - "*"
+
+dataset:
+  path: "chinese-poetry"
+
+database:
+  dsn: "sqlite://poetry.db"
