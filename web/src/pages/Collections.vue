@@ -1,6 +1,6 @@
 <template>
   <q-list>
-    <q-item>
+    <q-item v-if="dynasties.length > 0">
       <q-item-section side top>
         <q-item-label>
           <q-btn flat :color="!form.dynasty?'primary':'black'" label="朝代" @click="handleRemoveQuery('dynasty')"></q-btn>
@@ -38,12 +38,7 @@
       </q-item-section>
     </q-item>
 
-    <q-item v-if="result.loading">
-      <q-item-section>
-        <q-inner-loading :showing="result.loading"></q-inner-loading>
-      </q-item-section>
-    </q-item>
-    <q-item v-else-if="result.list.length == 0">
+    <q-item v-if="result.list.length == 0">
       <q-item-section>
         <q-item-label class="flex flex-center text-grey">无数据</q-item-label>
       </q-item-section>
@@ -85,6 +80,7 @@
         </q-item-section>
       </q-item>
     </template>
+    <q-inner-loading :showing="result.loading"></q-inner-loading>
   </q-list>
 </template>
 
@@ -137,7 +133,7 @@
  const handleCollection = (row) => {
      proxy.$router.push({path: "/poems", query: {collection: row.id}})
  }
- /* /Users/jianglin/Git/maple-go/filesea/web/src/composables/api.js */
+
  const handleCollections = () => {
      const params = {...form.value}
      if (result.value.form.name) {

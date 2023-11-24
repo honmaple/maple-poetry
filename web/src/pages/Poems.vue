@@ -1,6 +1,6 @@
 <template>
   <q-list>
-    <q-item>
+    <q-item v-if="dynastyResult.list.length > 0">
       <q-item-section side top>
         <q-item-label>
           <q-btn flat :color="!form.dynasty?'primary':'black'" label="朝代" @click="handleRemoveQuery('dynasty')"></q-btn>
@@ -18,7 +18,7 @@
       </q-item-section>
     </q-item>
 
-    <q-item>
+    <q-item v-if="collectionResult.list.length > 0">
       <q-item-section side top>
         <q-item-label>
           <q-btn flat :color="!form.collection?'primary':'black'" label="诗集" @click="handleRemoveQuery('collection')"></q-btn>
@@ -37,7 +37,7 @@
       </q-item-section>
     </q-item>
 
-    <q-item >
+    <q-item v-if="authorResult.list.length > 0">
       <q-item-section side top>
         <q-btn flat :color="!form.author?'primary':'black'"  label="作者" @click="handleRemoveQuery('author')"></q-btn>
       </q-item-section>
@@ -50,6 +50,22 @@
                    @click="handleQuery({author: author.id})" />
           </template>
           <q-btn flat label="更多" to="/authors" v-if="authorResult.pagination.rowsNumber > authorResult.list.length"></q-btn>
+        </q-item-label>
+      </q-item-section>
+    </q-item>
+
+    <q-item v-if="tagResult.list.length > 0">
+      <q-item-section side top>
+        <q-btn flat :color="!form.tag?'primary':'black'"  label="标签" @click="handleRemoveQuery('tag')"></q-btn>
+      </q-item-section>
+      <q-item-section>
+        <q-item-label>
+          <template v-for="(tag, index) in tagResult.list" :key="index">
+            <q-btn flat
+                   :label="tag.name"
+                   :color="form.tag == tag.id ?'primary':'black'"
+                   @click="handleQuery({tag: tag.id})" />
+          </template>
         </q-item-label>
       </q-item-section>
     </q-item>
@@ -74,12 +90,7 @@
       </q-item-section>
     </q-item>
 
-    <q-item v-if="result.loading">
-      <q-item-section>
-        <q-inner-loading :showing="result.loading"></q-inner-loading>
-      </q-item-section>
-    </q-item>
-    <q-item v-else-if="result.list.length == 0">
+    <q-item v-if="result.list.length == 0">
       <q-item-section>
         <q-item-label class="flex flex-center text-grey">无数据</q-item-label>
       </q-item-section>
@@ -93,7 +104,7 @@
                 <q-card-section :title="handlePoemTitle(row)" class="row justify-between">
                   <div class="text-h6 ellipsis self-baseline" style="cursor: pointer; max-width: 80%;"
                        @click="handlePoem(row)">
-                    {{ row.title }}<template v-if="row.chapter != ''"> · {{ row.chapter }}</template>
+                    <template v-if="row.chapter != ''">{{ row.chapter }} · </template>{{ row.title }}
                   </div>
                   <div class="text-subtitle2 ellipsis text-primary self-baseline" style="cursor: pointer"
                        @click="handleAuthor(row.author)"
@@ -126,6 +137,7 @@
         </q-item-section>
       </q-item>
     </template>
+    <q-inner-loading :showing="result.loading"></q-inner-loading>
   </q-list>
 </template>
 
@@ -154,6 +166,15 @@
  })
 
  const authorResult = ref({
+     list: [],
+     pagination: {
+         page: 1,
+         rowsPerPage: 0,
+         rowsNumber: 0,
+     }
+ })
+
+ const tagResult = ref({
      list: [],
      pagination: {
          page: 1,
@@ -214,6 +235,17 @@
          title = title + " 作者:" + row.author.name
      }
      return title
+ }
+
+ const handleTags = () => {
+     const params = {}
+     proxy.$api.get("/api/tags", {
+         params: params
+     }).then(resp => {
+         tagResult.value.list = resp.data.data.list
+         tagResult.value.pagination.rowsNumber = resp.data.data.total
+         tagResult.value.pagination.rowsPerPage = resp.data.data.limit
+     })
  }
 
  const handleAuthors = () => {
@@ -284,6 +316,7 @@
  )
 
  onMounted(() => {
+     handleTags()
      handleAuthors()
      handlePoems()
      handleDynasties()

@@ -13,6 +13,9 @@ type (
 
 		Dynasty   *Dynasty `gorm:"foreignKey:DynastyId;"                json:"dynasty"`
 		DynastyId uint     `gorm:"not null;unique_index:idx_name"       json:"dynasty_id"`
+
+		Prev *Author `gorm:"-"                                          json:"prev"`
+		Next *Author `gorm:"-"                                          json:"next"`
 	}
 	Authors []*Author
 )
@@ -49,8 +52,20 @@ func (db *DB) GetAuthors(opt *Option) (Authors, PageInfo, error) {
 
 func (db *DB) GetAuthor(id string) (*Author, error) {
 	ins := new(Author)
-	result := db.Preload("Dynasty").First(ins, "id = ?", id)
-	return ins, result.Error
+	if err := db.Preload("Dynasty").First(ins, "id = ?", id).Error; err != nil {
+		return nil, err
+	}
+
+	prev := new(Author)
+	if err := db.Order("id DESC").First(prev, "id < ?", ins.Id).Error; err == nil {
+		ins.Prev = prev
+	}
+
+	next := new(Author)
+	if err := db.Order("id").First(next, "id > ?", ins.Id).Error; err == nil {
+		ins.Next = next
+	}
+	return ins, nil
 }
 
 func (db *DB) GetRandomAuthor() (*Author, error) {

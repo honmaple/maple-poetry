@@ -64,8 +64,9 @@ func New(conf *config.Config, db *gorm.DB) *DB {
 
 func Init(conf *config.Config, db *gorm.DB) error {
 	return db.Debug().AutoMigrate(
-		new(Author),
+		new(Tag),
 		new(Poem),
+		new(Author),
 		new(Dynasty),
 		new(Collection),
 	)

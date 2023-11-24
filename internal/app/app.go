@@ -69,14 +69,18 @@ func (app *App) Run(webFS fs.FS) error {
 	r := router.New(app.Config, app.Log, app.DB)
 	bp := srv.Group(forest.WithPrefix("/api"))
 	{
-		bp.GET("/authors", r.GetAuthors)
-		bp.GET("/authors/:id", r.GetAuthor)
-		bp.GET("/authors/random", r.GetRandomAuthor)
+		bp.GET("/tags", r.GetTags)
+		bp.GET("/tags/:id", r.GetTag)
 	}
 	{
 		bp.GET("/poems", r.GetPoems)
 		bp.GET("/poems/:id", r.GetPoem)
 		bp.GET("/poems/random", r.GetRandomPoem)
+	}
+	{
+		bp.GET("/authors", r.GetAuthors)
+		bp.GET("/authors/:id", r.GetAuthor)
+		bp.GET("/authors/random", r.GetRandomAuthor)
 	}
 	{
 		bp.GET("/dynasties", r.GetDynasties)

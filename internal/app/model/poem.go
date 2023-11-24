@@ -7,18 +7,21 @@ import (
 type (
 	Poem struct {
 		BaseModel
-		Title   string `json:"title"`
-		Chapter string `json:"chapter"`
-		Section string `json:"section"`
-		Content string `json:"content"`
-		Note    string `json:"note"`
+		Title      string `                                   json:"title"`
+		Chapter    string `                                   json:"chapter"`
+		Content    string `                                   json:"content"`
+		Annotation string `                                   json:"annotation"`
 
-		Author         *Author       `json:"author"`
-		AuthorId       uint        `json:"author_id"`
-		Dynasty      *Dynasty    `json:"dynasty"`
-		DynastyId    uint        `json:"dynasty_id"`
-		Collection   *Collection `json:"collection"`
-		CollectionId uint        `json:"collection_id"`
+		Author       *Author     `                            json:"author"`
+		AuthorId     uint        `                            json:"author_id"`
+		Dynasty      *Dynasty    `                            json:"dynasty"`
+		DynastyId    uint        `                            json:"dynasty_id"`
+		Collection   *Collection `                            json:"collection"`
+		CollectionId uint        `                            json:"collection_id"`
+		Tags         []*Tag      `gorm:"many2many:poem_tags;" json:"tags"`
+
+		Prev *Poem `gorm:"-"                                  json:"prev"`
+		Next *Poem `gorm:"-"                                  json:"next"`
 	}
 	Poems []*Poem
 )
@@ -48,6 +51,18 @@ func (db *DB) GetPoems(opt *Option) (Poems, PageInfo, error) {
 		q = q.Where("collection_id in (?)", db.Model(Collection{}).Select("id").Where("name = ?", collection))
 	}
 
+	if tag := opt.GetInt("tag"); tag > 0 {
+		q = q.Where("id in (?)", db.Model(Tag{}).
+			Select("poem_tags.poem_id as poem_id").
+			Joins("LEFT JOIN poem_tags ON poem_tags.tag_id = tags.id").
+			Where("tags.id = ?", tag))
+	} else if tag := opt.GetString("tag"); tag != "" {
+		q = q.Where("id in (?)", db.Model(Tag{}).
+			Select("poem_tags.poem_id as poem_id").
+			Joins("LEFT JOIN poem_tags ON poem_tags.tag_id = tags.id").
+			Where("tags.name = ?", tag))
+	}
+
 	if sort := opt.GetString("sort"); sort == "random" {
 		q = q.Order("RANDOM()")
 	} else if sort == "desc" {
@@ -68,8 +83,20 @@ func (db *DB) GetPoems(opt *Option) (Poems, PageInfo, error) {
 
 func (db *DB) GetPoem(id string) (*Poem, error) {
 	ins := new(Poem)
-	result := db.Preload("Author").Preload("Dynasty").First(ins, "id = ?", id)
-	return ins, result.Error
+	if err := db.Preload("Author").Preload("Dynasty").First(ins, "id = ?", id).Error; err != nil {
+		return nil, err
+	}
+
+	prev := new(Poem)
+	if err := db.Order("id DESC").First(prev, "id < ?", ins.Id).Error; err == nil {
+		ins.Prev = prev
+	}
+
+	next := new(Poem)
+	if err := db.Order("id").First(next, "id > ?", ins.Id).Error; err == nil {
+		ins.Next = next
+	}
+	return ins, nil
 }
 
 func (db *DB) GetRandomPoem() (*Poem, error) {

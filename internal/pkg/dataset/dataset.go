@@ -13,7 +13,7 @@ import (
 
 type dataset[V any] struct {
 	name    string
-	path    string
+	desc    string
 	files   []string
 	parser  func(gjson.Result) V
 	dynasty string
@@ -22,7 +22,7 @@ type dataset[V any] struct {
 func (set *dataset[V]) init(app *app.App, fn func(*app.App, *dataset[V], string, gjson.Result) error) error {
 	root := app.Config.GetString("dataset.path")
 	for _, file := range set.files {
-		matches, err := filepath.Glob(filepath.Join(root, set.path, file))
+		matches, err := filepath.Glob(filepath.Join(root, file))
 		if err != nil {
 			return err
 		}
@@ -50,6 +50,17 @@ func (sets datasets[V]) init(app *app.App, fn func(*app.App, *dataset[V], string
 	return nil
 }
 
+func trimTitle(title, chapter string) string {
+	strs := []string{"·", " · ", " "}
+	for _, str := range strs {
+		result := strings.TrimPrefix(title, chapter+str)
+		if result != title {
+			return result
+		}
+	}
+	return title
+}
+
 func resultsToString(results []gjson.Result) string {
 	strs := make([]string, len(results))
 	for i, result := range results {
@@ -59,7 +70,7 @@ func resultsToString(results []gjson.Result) string {
 }
 
 func insertCollection(app *app.App, collection *model.Collection) error {
-	if collection == nil {
+	if collection == nil || collection.Id > 0 {
 		return nil
 	}
 	q := app.DB.Where("name = ?", collection.Name)
@@ -73,15 +84,18 @@ func insertCollection(app *app.App, collection *model.Collection) error {
 }
 
 func insertDynasty(app *app.App, dynasty *model.Dynasty) error {
-	if dynasty == nil {
+	if dynasty == nil || dynasty.Id > 0 {
 		return nil
 	}
+	// 去除唐代里的代
+	dynasty.Name = strings.TrimSuffix(dynasty.Name, "代")
+
 	result := app.DB.Where("name = ?", dynasty.Name).FirstOrCreate(dynasty)
 	return result.Error
 }
 
 func insertAuthor(app *app.App, author *model.Author) error {
-	if author == nil {
+	if author == nil || author.Id > 0 {
 		return nil
 	}
 	q := app.DB.Where("name = ?", author.Name)
@@ -91,6 +105,14 @@ func insertAuthor(app *app.App, author *model.Author) error {
 		q = q.Where("dynasty_id = ?", app.DB.Model(model.Dynasty{}).Select("id").Where("name = ?", author.Dynasty.Name))
 	}
 	result := q.FirstOrCreate(author)
+	return result.Error
+}
+
+func insertTag(app *app.App, tag *model.Tag) error {
+	if tag == nil || tag.Id > 0 {
+		return nil
+	}
+	result := app.DB.Where("kind = ? AND name = ?", tag.Kind, tag.Name).FirstOrCreate(tag)
 	return result.Error
 }
 

@@ -10,9 +10,8 @@ import (
 var (
 	authors = datasets[*model.Author]{
 		{
-			path: "五代诗词/nantang",
 			files: []string{
-				"authors.json",
+				"五代诗词/nantang/authors.json",
 			},
 			dynasty: "五代十国",
 			parser: func(row gjson.Result) *model.Author {
@@ -23,9 +22,8 @@ var (
 			},
 		},
 		{
-			path: "全唐诗",
 			files: []string{
-				"authors.tang.json",
+				"全唐诗/authors.tang.json",
 			},
 			dynasty: "唐",
 			parser: func(row gjson.Result) *model.Author {
@@ -36,9 +34,8 @@ var (
 			},
 		},
 		{
-			path: "全唐诗",
 			files: []string{
-				"authors.song.json",
+				"全唐诗/authors.song.json",
 			},
 			dynasty: "宋",
 			parser: func(row gjson.Result) *model.Author {
@@ -49,9 +46,8 @@ var (
 			},
 		},
 		{
-			path: "宋词",
 			files: []string{
-				"author.song.json",
+				"宋词/author.song.json",
 			},
 			dynasty: "宋",
 			parser: func(row gjson.Result) *model.Author {

@@ -2,6 +2,7 @@ package dataset
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"poetry/internal/app"
@@ -14,9 +15,8 @@ var (
 	mengxues = datasets[model.Poems]{
 		{
 			name: "三字經",
-			path: "蒙学",
 			files: []string{
-				"sanzijing-traditional.json",
+				"蒙学/sanzijing-traditional.json",
 			},
 			dynasty: "南宋",
 			parser: func(row gjson.Result) model.Poems {
@@ -33,23 +33,22 @@ var (
 		},
 		{
 			name: "百家姓",
-			path: "蒙学",
 			files: []string{
-				"baijiaxing.json",
+				"蒙学/baijiaxing.json",
 			},
 			dynasty: "北宋",
 			parser: func(row gjson.Result) model.Poems {
 				origins := row.Get("origin").Array()
 
-				notes := make([]string, len(origins))
+				anns := make([]string, len(origins))
 				for i, origin := range origins {
-					notes[i] = fmt.Sprintf("%s：%s", origin.Get("surname").String(), origin.Get("place").String())
+					anns[i] = fmt.Sprintf("%s：%s", origin.Get("surname").String(), origin.Get("place").String())
 				}
 				return model.Poems{
 					{
-						Title:   row.Get("title").String(),
-						Content: resultsToString(row.Get("paragraphs").Array()),
-						Note:    strings.Join(notes, "\n"),
+						Title:      row.Get("title").String(),
+						Content:    resultsToString(row.Get("paragraphs").Array()),
+						Annotation: strings.Join(anns, "\n"),
 						Author: &model.Author{
 							Name: row.Get("author").String(),
 						},
@@ -59,17 +58,16 @@ var (
 		},
 		{
 			name: "千字文",
-			path: "蒙学",
 			files: []string{
-				"qianziwen.json",
+				"蒙学/qianziwen.json",
 			},
 			dynasty: "南北朝",
 			parser: func(row gjson.Result) model.Poems {
 				return model.Poems{
 					{
-						Title:   row.Get("title").String(),
-						Content: resultsToString(row.Get("paragraphs").Array()),
-						Note:    resultsToString(row.Get("spells").Array()),
+						Title:      row.Get("title").String(),
+						Content:    resultsToString(row.Get("paragraphs").Array()),
+						Annotation: resultsToString(row.Get("spells").Array()),
 						Author: &model.Author{
 							Name: row.Get("author").String(),
 						},
@@ -79,9 +77,8 @@ var (
 		},
 		{
 			name: "弟子規",
-			path: "蒙学",
 			files: []string{
-				"dizigui.json",
+				"蒙学/dizigui.json",
 			},
 			dynasty: "清",
 			parser: func(row gjson.Result) model.Poems {
@@ -91,8 +88,8 @@ var (
 				poems := make(model.Poems, 0)
 				for _, c := range row.Get("content").Array() {
 					poem := &model.Poem{
-						Title:   title,
-						Chapter: c.Get("chapter").String(),
+						Title:   c.Get("chapter").String(),
+						Chapter: title,
 						Content: resultsToString(c.Get("paragraphs").Array()),
 						Author: &model.Author{
 							Name: author,
@@ -105,9 +102,8 @@ var (
 		},
 		{
 			name: "幼學瓊林",
-			path: "蒙学",
 			files: []string{
-				"youxueqionglin.json",
+				"蒙学/youxueqionglin.json",
 			},
 			dynasty: "明",
 			parser: func(row gjson.Result) model.Poems {
@@ -118,8 +114,8 @@ var (
 					title := first.Get("title").String()
 					for _, second := range first.Get("content").Array() {
 						poem := &model.Poem{
-							Title:   title,
-							Chapter: second.Get("chapter").String(),
+							Title:   second.Get("chapter").String(),
+							Chapter: title,
 							Content: resultsToString(second.Get("paragraphs").Array()),
 							Author: &model.Author{
 								Name: author,
@@ -133,9 +129,8 @@ var (
 		},
 		{
 			name: "朱子家訓",
-			path: "蒙学",
 			files: []string{
-				"zhuzijiaxun.json",
+				"蒙学/zhuzijiaxun.json",
 			},
 			dynasty: "清",
 			parser: func(row gjson.Result) model.Poems {
@@ -151,24 +146,131 @@ var (
 			},
 		},
 		{
-			name: "古文觀止",
-			path: "蒙学",
+			name: "千家詩",
 			files: []string{
-				"guwenguanzhi.json",
+				"蒙学/qianjiashi.json",
+			},
+			dynasty: "南宋",
+			parser: func(row gjson.Result) model.Poems {
+				// "author": "（唐）王維",
+				re := regexp.MustCompile(`^（(.+?)）(.+)`)
+
+				poems := make(model.Poems, 0)
+				for _, first := range row.Get("content").Array() {
+					tags := model.Tags{
+						{
+							Name: first.Get("type").String(),
+							Kind: model.TAG_KIND_STYLE,
+						},
+					}
+					for _, second := range first.Get("content").Array() {
+						var (
+							title = second.Get("chapter").String()
+
+							dynasty *model.Dynasty
+							author  = &model.Author{
+								Name: second.Get("author").String(),
+							}
+						)
+						if match := re.FindStringSubmatch(author.Name); match != nil {
+							dynasty = &model.Dynasty{
+								Name: match[1],
+							}
+							author.Name = match[2]
+						}
+
+						length := len(poems)
+						for _, para := range second.Get("paragraphs").Array() {
+							if para.Type == gjson.String {
+								break
+							}
+							poem := &model.Poem{
+								Title:   title + " " + para.Get("subchapter").String(),
+								Content: resultsToString(para.Get("paragraphs").Array()),
+								Author:  author,
+								Dynasty: dynasty,
+								Tags:    tags,
+							}
+							poems = append(poems, poem)
+						}
+						if len(poems) == length {
+							poem := &model.Poem{
+								Title:   title,
+								Content: resultsToString(second.Get("paragraphs").Array()),
+								Author:  author,
+								Dynasty: dynasty,
+								Tags:    tags,
+							}
+							poems = append(poems, poem)
+						}
+					}
+				}
+				return poems
+			},
+		},
+		{
+			name: "古文觀止",
+			files: []string{
+				"蒙学/guwenguanzhi.json",
 			},
 			dynasty: "清",
 			parser: func(row gjson.Result) model.Poems {
+				// "author": "先秦：左丘明 "
+				re := regexp.MustCompile(`^(.+?)：(.*?)\s*?$`)
+
 				poems := make(model.Poems, 0)
 				for _, first := range row.Get("content").Array() {
 					title := first.Get("title").String()
 					for _, second := range first.Get("content").Array() {
+						var (
+							dynasty *model.Dynasty
+							author  = &model.Author{
+								Name: second.Get("author").String(),
+							}
+						)
+						if match := re.FindStringSubmatch(author.Name); match != nil {
+							dynasty = &model.Dynasty{
+								Name: match[1],
+							}
+							author.Name = match[2]
+						}
+
 						poem := &model.Poem{
-							Title:   title,
-							Chapter: second.Get("chapter").String(),
+							Title:   second.Get("chapter").String(),
+							Chapter: title,
+							Content: resultsToString(second.Get("paragraphs").Array()),
+							Author:  author,
+							Dynasty: dynasty,
+						}
+						poems = append(poems, poem)
+					}
+				}
+				return poems
+			},
+		},
+		{
+			name: "唐詩三百首",
+			files: []string{
+				"蒙学/tangshisanbaishou.json",
+			},
+			dynasty: "唐",
+			parser: func(row gjson.Result) model.Poems {
+				poems := make(model.Poems, 0)
+				for _, first := range row.Get("content").Array() {
+					tags := model.Tags{
+						{
+							Name: first.Get("type").String(),
+							Kind: model.TAG_KIND_STYLE,
+						},
+					}
+					for _, second := range first.Get("content").Array() {
+						poem := &model.Poem{
+							Title:   second.Get("chapter").String(),
 							Content: resultsToString(second.Get("paragraphs").Array()),
 							Author: &model.Author{
 								Name: second.Get("author").String(),
 							},
+							Tags: tags,
 						}
 						poems = append(poems, poem)
 					}
@@ -178,9 +280,8 @@ var (
 		},
 		{
 			name: "聲律啟蒙",
-			path: "蒙学",
 			files: []string{
-				"shenglvqimeng.json",
+				"蒙学/shenglvqimeng.json",
 			},
 			dynasty: "清",
 			parser: func(row gjson.Result) model.Poems {
@@ -206,21 +307,24 @@ var (
 		},
 		{
 			name: "文字蒙求",
-			path: "蒙学",
 			files: []string{
-				"wenzimengqiu.json",
+				"蒙学/wenzimengqiu.json",
 			},
 			dynasty: "清",
 			parser: func(row gjson.Result) model.Poems {
+				title := row.Get("title").String()
+				author := &model.Author{
+					Name: "王筠",
+					Desc: row.Get("author").String(),
+				}
+
 				poems := make(model.Poems, 0)
 				for _, first := range row.Get("content").Array() {
 					poem := &model.Poem{
 						Title:   first.Get("title").String(),
+						Chapter: title,
 						Content: resultsToString(first.Get("paragraphs").Array()),
-						Author: &model.Author{
-							Name: "王筠",
-							Desc: row.Get("author").String(),
-						},
+						Author:  author,
 					}
 					poems = append(poems, poem)
 				}
@@ -229,9 +333,8 @@ var (
 		},
 		{
 			name: "增廣賢文",
-			path: "蒙学",
 			files: []string{
-				"zengguangxianwen.json",
+				"蒙学/zengguangxianwen.json",
 			},
 			dynasty: "明",
 			parser: func(row gjson.Result) model.Poems {
@@ -295,6 +398,11 @@ func insertMengxues(app *app.App, set *dataset[model.Poems], file string, result
 				return err
 			}
 			poem.AuthorId = poem.Author.Id
+		}
+		for _, tag := range poem.Tags {
+			if err := insertTag(app, tag); err != nil {
+				return err
+			}
 		}
 	}
 	return app.DB.CreateInBatches(poems, 1000).Error

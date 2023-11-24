@@ -24,7 +24,7 @@
     -->
     <q-page-container>
       <q-page style="max-width: 800px; margin: 0 auto;">
-        <router-view />
+        <router-view :key="$route.path" />
       </q-page>
     </q-page-container>
   </q-layout>
