@@ -9,6 +9,7 @@
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
 
+const { productName, description, version } = require("./package.json");
 const { configure } = require('quasar/wrappers');
 const path = require('path');
 
@@ -51,7 +52,8 @@ module.exports = configure(function (ctx) {
 			env: {
 				BASE_URL: ctx.dev
 					? 'http://127.0.0.1:8000'
-					: ''
+					: '',
+				PACKAGE: { productName, description, version }
 			},
 			target: {
 				browser: ['es2019', 'edge88', 'firefox78', 'chrome87', 'safari13.1'],

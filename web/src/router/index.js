@@ -11,6 +11,8 @@ import routes from './routes'
  * with the Router instance.
  */
 
+const { productName, description } = process.env.PACKAGE
+
 export default route(function (/* { store, ssrContext } */) {
 	const createHistory = process.env.SERVER
 		? createMemoryHistory
@@ -27,8 +29,10 @@ export default route(function (/* { store, ssrContext } */) {
 	})
 
 	Router.beforeEach(async (to, from, next) => {
-		if (to.meta && to.meta.title) {
-			document.title = to.meta.title
+		if (to.path == "/") {
+			document.title = productName + " · " + description
+		} else if (to.meta && to.meta.title) {
+			document.title = to.meta.title + " · " + productName
 		}
 		return next()
 	})

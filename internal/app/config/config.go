@@ -10,7 +10,7 @@ var (
 	defaultConfig = map[string]interface{}{
 		"server.addr":                ":8000",
 		"server.mode":                "",
-		"server.pagesize":            36,
+		"server.pagesize":            12,
 		"logger.out":                 "stdout",
 		"logger.level":               "info",
 		"logger.file_format":         "%Y%m%d",

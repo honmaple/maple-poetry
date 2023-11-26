@@ -17,6 +17,7 @@ docker run --rm -it -v `pwd`/example:/opt/poetry -v `pwd`/chinese-poetry:/opt/ch
 /opt/poetry # poetry init --path /opt/chinese-poetry --insert
 ```
 Have a cup of coffee and wait for a while, then `poetry.db` would be generated in then `example` directory
+
 4. Run server
 ```
 docker run --name maple-poetry -d -p 8000:8000 -v `pwd`/example:/opt/poetry maple-poetry
@@ -24,7 +25,7 @@ docker run --name maple-poetry -d -p 8000:8000 -v `pwd`/example:/opt/poetry mapl
 
 ## Demo
 
-[demo](https://poetry.honmaple.com)
+[demo](https://shici.honmaple.com)
 
 ## Screenshot
 ![example](screenshot/example.png)

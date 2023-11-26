@@ -108,6 +108,9 @@
  })
 
  const paginationTotal = computed(() => {
+     if (result.value.list.length == result.value.pagination.rowsNumber) {
+         return 1
+     }
      return Math.ceil(result.value.pagination.rowsNumber / result.value.pagination.rowsPerPage)
  })
 

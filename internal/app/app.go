@@ -93,7 +93,7 @@ func (app *App) Run(webFS fs.FS) error {
 	return srv.Start(conf.GetString("server.addr"))
 }
 
-func (app *App) Init(file string) error {
+func (app *App) Init(file string, strs ...string) error {
 	conf := app.Config
 
 	if _, err := os.Stat(file); err == nil || os.IsExist(err) {
@@ -104,6 +104,15 @@ func (app *App) Init(file string) error {
 		conf.SetConfigFile(file)
 		if err := conf.ReadConfig(strings.NewReader(os.ExpandEnv(string(content)))); err != nil {
 			return err
+		}
+	}
+
+	for _, str := range strs {
+		c := strings.SplitN(str, "=", 2)
+		if len(c) < 2 {
+			conf.Set(c[0], "")
+		} else {
+			conf.Set(c[0], c[1])
 		}
 	}
 

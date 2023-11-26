@@ -39,8 +39,13 @@ func (db *DB) GetCollections(opt *Option) (Collections, PageInfo, error) {
 		Page:  opt.GetInt("page"),
 		Limit: opt.GetInt("limit"),
 	}
-	offset, limit := db.GetLimit(&pageinfo)
-	q = q.Count(&pageinfo.Total).Offset(offset).Limit(limit)
+	q = q.Count(&pageinfo.Total)
+
+	// 不限制数量时默认显示全部
+	if pageinfo.Limit > 0 {
+		offset, limit := db.GetLimit(&pageinfo)
+		q = q.Offset(offset).Limit(limit)
+	}
 
 	ins := make(Collections, 0)
 	result := q.Find(&ins)

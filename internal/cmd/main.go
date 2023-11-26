@@ -23,7 +23,7 @@ var (
 )
 
 func before(clx *cli.Context) error {
-	return defaultApp.Init(clx.String("config"))
+	return defaultApp.Init(clx.String("config"), clx.StringSlice("set-config")...)
 }
 
 func action(clx *cli.Context) error {
@@ -58,9 +58,10 @@ func Run() {
 				Usage:   "listen `ADDR`",
 			},
 			&cli.PathFlag{
-				Name:  "config",
-				Usage: "load config from `FILE`",
-				Value: "config.yaml",
+				Name:    "config",
+				Aliases: []string{"c"},
+				Usage:   "load config from `FILE`",
+				Value:   "config.yaml",
 			},
 			&cli.StringSliceFlag{
 				Name:  "set-config",
