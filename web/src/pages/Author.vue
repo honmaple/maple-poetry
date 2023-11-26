@@ -1,5 +1,5 @@
 <template>
-  <q-card flat>
+  <q-card flat class="shici-layout">
     <q-card-section class="column justify-center items-center">
       <div class="text-h6">
         {{ result.row.name }}
@@ -15,7 +15,7 @@
       </div>
     </q-card-section>
 
-    <q-card-section v-if="result.row.short_desc != ''">
+    <q-card-section v-if="!result.loading && result.row.short_desc != ''">
       <span class="text-subtitle2 text-primary">简介：</span>
       <div style="white-space: pre-line;">
         {{ result.row.short_desc }}
@@ -59,7 +59,7 @@
       </q-btn>
     </q-card-section>
 
-    <q-inner-loading :showing="result.loading"></q-inner-loading>
+    <q-inner-loading label="加载中" :showing="result.loading"></q-inner-loading>
   </q-card>
 </template>
 

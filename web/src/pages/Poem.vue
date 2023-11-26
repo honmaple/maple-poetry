@@ -1,6 +1,6 @@
 <template>
-  <q-card flat>
-    <q-card-section class="column justify-center items-center">
+  <q-card flat class="shici-layout">
+    <q-card-section class="column flex-center">
       <div class="text-h6">
         <template v-if="result.row.chapter != ''">{{ result.row.chapter }} · </template>{{ result.row.title }}
       </div>
@@ -10,20 +10,20 @@
       </div>
     </q-card-section>
 
-    <q-card-section class="column justify-center items-center">
-      <div style="white-space: pre-line; text-align: center; font-size: 1.05rem; font-weight: 500;">
+    <q-card-section class="column flex-center">
+      <div class="shici-content">
         {{ result.row.content }}
       </div>
     </q-card-section>
 
-    <q-card-section v-if="result.row.author && result.row.author.desc != ''">
+    <q-card-section v-if="!result.loading && result.row.author && result.row.author.desc != ''">
       <span class="text-subtitle2 text-primary">作者：</span>
       <div style="white-space: pre-line;">
         {{ result.row.author.desc }}
       </div>
     </q-card-section>
 
-    <q-card-section v-if="result.row.annotation != ''">
+    <q-card-section v-if="!result.loading && result.row.annotation != ''">
       <span class="text-subtitle2 text-primary">注解：</span>
       <div style="white-space: pre-line;">
         {{ result.row.annotation }}
@@ -41,7 +41,7 @@
         {{ result.row.next.title }}
       </q-btn>
     </q-card-section>
-    <q-inner-loading :showing="result.loading"></q-inner-loading>
+    <q-inner-loading label="加载中" :showing="result.loading"></q-inner-loading>
   </q-card>
 </template>
 

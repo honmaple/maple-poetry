@@ -27,7 +27,7 @@ type (
 )
 
 func (db *DB) GetPoems(opt *Option) (Poems, PageInfo, error) {
-	q := db.Model(Poem{}).Preload("Author")
+	q := db.Model(Poem{}).Preload("Author").Preload("Dynasty")
 
 	if title := opt.GetString("title"); title != "" {
 		q = q.Where("title LIKE ?", fmt.Sprintf("%%%s%%", title))

@@ -1,5 +1,5 @@
 <template>
-  <q-list>
+  <q-list class="shici-layout">
     <q-item v-if="dynasties.length > 0">
       <q-item-section side top>
         <q-item-label>
@@ -74,13 +74,13 @@
           <q-pagination direction-links boundary-numbers
                         size="sm"
                         :max="paginationTotal"
-                        :max-pages="6"
+                        :max-pages="5"
                         :model-value="result.pagination.page"
                         @update:model-value="handlePagination" />
         </q-item-section>
       </q-item>
     </template>
-    <q-inner-loading :showing="result.loading"></q-inner-loading>
+    <q-inner-loading label="加载中" :showing="result.loading"></q-inner-loading>
   </q-list>
 </template>
 

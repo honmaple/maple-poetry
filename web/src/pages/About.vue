@@ -1,5 +1,5 @@
 <template>
-  <q-list>
+  <q-list class="shici-layout">
     <q-item-label header>关于</q-item-label>
     <q-item>
       <q-item-section avatar>

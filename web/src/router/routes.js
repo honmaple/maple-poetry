@@ -1,15 +1,11 @@
 const routes = [
 	{
 		path: '/',
-		component: () => import('layouts/MainLayout.vue'),
+		component: () => import('layouts/Layout.vue'),
 		children: [
 			{
 				path: '',
-				alias: '/poems',
-				component: () => import('pages/Poems.vue'),
-				meta: {
-					title: "诗词",
-				}
+				component: () => import('pages/Index.vue'),
 			},
 			{
 				path: '/authors',
@@ -23,6 +19,13 @@ const routes = [
 				component: () => import('pages/Author.vue'),
 				meta: {
 					title: "诗人详情",
+				}
+			},
+			{
+				path: '/poems',
+				component: () => import('pages/Poems.vue'),
+				meta: {
+					title: "诗词",
 				}
 			},
 			{

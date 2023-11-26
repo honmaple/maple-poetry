@@ -28,4 +28,5 @@ docker run --name maple-poetry -d -p 8000:8000 -v `pwd`/example:/opt/poetry mapl
 [demo](https://shici.honmaple.com)
 
 ## Screenshot
-![example](screenshot/example.png)
+![example1](screenshot/example01.png)
+![example2](screenshot/example02.png)
