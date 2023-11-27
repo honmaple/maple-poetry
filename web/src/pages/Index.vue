@@ -8,6 +8,8 @@
                 padding
                 arrows
                 class="bg-primary text-white full-height full-width"
+                :prev-icon="icon.matChevronLeft"
+                :next-icon="icon.matChevronRight"
                 v-model="slide">
       <q-carousel-slide :name="index" class="column no-wrap flex-center" :key="index" v-for="(row, index) in result.list">
         <q-card flat class="bg-primary text-white">
@@ -34,9 +36,9 @@
 
 <script setup>
  import { ref, onMounted } from 'vue';
- import { getCurrentInstance } from 'vue'
+ import useApp from '../composables';
 
- const { proxy } = getCurrentInstance()
+ const { app, icon } = useApp()
 
  const slide = ref(0)
 
@@ -48,7 +50,7 @@
  const handlePoem = () => {
      result.value.loading = true
 
-     proxy.$api.get(`/api/poems`, {
+     app.$api.get(`/api/poems`, {
          params: {sort: "random"}
      }).then(resp => {
          result.value.list = resp.data.data.list

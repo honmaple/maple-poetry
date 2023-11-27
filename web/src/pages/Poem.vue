@@ -30,12 +30,12 @@
       </div>
     </q-card-section>
     <q-card-section class="row" :class="{'justify-end': !result.row.prev, 'justify-start': !result.row.next, 'justify-between': result.row.prev && result.row.next}">
-      <q-btn flat class="primary text-primary" icon="chevron_left"
+      <q-btn flat class="primary text-primary shici-chevron-left" :icon="icon.matChevronLeft"
              @click="$router.push({params: {id: result.row.prev.id}})" v-if="result.row.prev">
         <template v-if="result.row.prev.chapter != ''">{{ result.row.prev.chapter }} · </template>
         {{ result.row.prev.title }}
       </q-btn>
-      <q-btn flat class="primary text-primary self-end" icon-right="chevron_right"
+      <q-btn flat class="primary text-primary shici-chevron-right" :icon-right="icon.matChevronRight"
              @click="$router.push({params: {id: result.row.next.id}})" v-if="result.row.next">
         <template v-if="result.row.next.chapter != ''">{{ result.row.next.chapter }} · </template>
         {{ result.row.next.title }}
@@ -47,9 +47,9 @@
 
 <script setup>
  import { computed, ref, watch, onMounted } from 'vue';
- import { getCurrentInstance } from 'vue'
+ import useApp from '../composables';
 
- const { proxy } = getCurrentInstance()
+ const { app, icon } = useApp()
 
  const result = ref({
      row: {
@@ -62,7 +62,7 @@
  const handlePoem = () => {
      result.value.loading = true
 
-     proxy.$api.get(`/api/poems/${proxy.$route.params.id}`).then(resp => {
+     app.$api.get(`/api/poems/${app.$route.params.id}`).then(resp => {
          result.value.row = resp.data.data
      }).finally(_ => {
          result.value.loading = false

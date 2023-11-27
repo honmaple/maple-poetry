@@ -11,3 +11,21 @@
     font-size: 1.05rem;
     font-weight: 500;
 }
+
+.shici-chevron-left {
+    max-width: 50%;
+    .q-btn__content {
+        flex-wrap: nowrap;
+        align-items: flex-start;
+        text-align: left;
+    }
+}
+
+.shici-chevron-right {
+    max-width: 50%;
+    .q-btn__content {
+        flex-wrap: nowrap;
+        align-items: flex-start;
+        text-align: right;
+    }
+}

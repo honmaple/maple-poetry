@@ -49,11 +49,11 @@
     </q-card-section>
 
     <q-card-section class="row" :class="{'justify-end': !result.row.prev, 'justify-start': !result.row.next, 'justify-between': result.row.prev && result.row.next}">
-      <q-btn flat class="primary text-primary" icon="chevron_left"
+      <q-btn flat class="primary text-primary shici-chevron-left" :icon="icon.matChevronLeft"
              @click="$router.push({params: {id: result.row.prev.id}})" v-if="result.row.prev">
         {{ result.row.prev.name }}
       </q-btn>
-      <q-btn flat class="primary text-primary self-end" icon-right="chevron_right"
+      <q-btn flat class="primary text-primary shici-chevron-right" :icon-right="icon.matChevronRight"
              @click="$router.push({params: {id: result.row.next.id}})" v-if="result.row.next">
         {{ result.row.next.name }}
       </q-btn>
@@ -65,9 +65,9 @@
 
 <script setup>
  import { computed, ref, watch, onMounted } from 'vue';
- import { getCurrentInstance } from 'vue'
+ import useApp from '../composables';
 
- const { proxy } = getCurrentInstance()
+ const { app, icon } = useApp()
 
  const result = ref({
      row: ref({
@@ -78,10 +78,10 @@
 
  const handleAuthor = () => {
      result.value.loading = true
-     proxy.$api.get(`/api/authors/${proxy.$route.params.id}`).then(resp => {
+     app.$api.get(`/api/authors/${app.$route.params.id}`).then(resp => {
          result.value.row = resp.data.data
 
-         proxy.$api.get(`/api/poems`, {
+         app.$api.get(`/api/poems`, {
              params: {author: result.value.row.id}
          }).then(resp => {
              result.value.row.poems = resp.data.data.list
@@ -92,7 +92,7 @@
  }
 
  const handlePoem = (row) => {
-     proxy.$router.push({path: `/poems/${row.id}`})
+     app.$router.push({path: `/poems/${row.id}`})
  }
 
  onMounted(() => {

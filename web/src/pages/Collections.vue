@@ -21,9 +21,9 @@
     <q-item>
       <q-item-section>
         <q-item-label>
-          <q-btn flat icon="sort" label="默认排序" @click="handleQuery({sort: 'desc'})" v-if="!form.sort" />
-          <q-btn flat icon="sort" color="primary" label="倒序" @click="handleQuery({sort: 'random'})" v-else-if="form.sort == 'desc'" />
-          <q-btn flat icon="sort" color="primary" label="随机" @click="handleRemoveQuery('sort')" v-else />
+          <q-btn flat :icon="icon.matSort" label="默认排序" @click="handleQuery({sort: 'desc'})" v-if="!form.sort" />
+          <q-btn flat :icon="icon.matSort" color="primary" label="倒序" @click="handleQuery({sort: 'random'})" v-else-if="form.sort == 'desc'" />
+          <q-btn flat :icon="icon.matSort" color="primary" label="随机" @click="handleRemoveQuery('sort')" v-else />
         </q-item-label>
       </q-item-section>
       <q-space />
@@ -31,7 +31,7 @@
         <q-item-label>
           <q-input dense outlined label="输入诗集名称" @keyup.enter="handleCollections" v-model="result.form.name">
             <template v-slot:append>
-              <q-icon name="search" style="cursor: pointer;" @click="handleCollections" />
+              <q-icon :name="icon.matSearch" style="cursor: pointer;" @click="handleCollections" />
             </template>
           </q-input>
         </q-item-label>
@@ -73,6 +73,10 @@
         <q-item-section class="items-center">
           <q-pagination direction-links boundary-numbers
                         size="sm"
+                        :icon-first="icon.matFirstPage"
+                        :icon-last="icon.matLastPage"
+                        :icon-prev="icon.matKeyboardArrowLeft"
+                        :icon-next="icon.matKeyboardArrowRight"
                         :max="paginationTotal"
                         :max-pages="5"
                         :model-value="result.pagination.page"
@@ -86,14 +90,14 @@
 
 <script setup>
  import { computed, ref, watch, onMounted } from 'vue';
- import { getCurrentInstance } from 'vue'
+ import useApp from '../composables';
 
- const { proxy } = getCurrentInstance()
+ const { app, icon } = useApp()
 
  const dynasties = ref([])
 
  const form = computed(() => {
-     return proxy.$route.query
+     return app.$route.query
  })
 
  const result = ref({
@@ -124,17 +128,17 @@
  }
 
  const handleQuery = (query) => {
-     proxy.$router.push({path: "/collections", query: {...form.value, ...query}})
+     app.$router.push({path: "/collections", query: {...form.value, ...query}})
  }
 
  const handleRemoveQuery = (key) => {
      let query = {...form.value}
      delete query[key]
-     proxy.$router.push({path: "/collections", query: query})
+     app.$router.push({path: "/collections", query: query})
  }
 
  const handleCollection = (row) => {
-     proxy.$router.push({path: "/poems", query: {collection: row.id}})
+     app.$router.push({path: "/poems", query: {collection: row.id}})
  }
 
  const handleCollections = () => {
@@ -147,7 +151,7 @@
      }
 
      result.value.loading = true
-     proxy.$api.get("/api/collections", {
+     app.$api.get("/api/collections", {
          params: params
      }).then(resp => {
          result.value.pagination.rowsNumber = resp.data.data.total
@@ -159,7 +163,7 @@
  }
 
  const handleDynasties = () => {
-     proxy.$api.get("/api/dynasties").then(resp => {
+     app.$api.get("/api/dynasties").then(resp => {
          dynasties.value = resp.data.data.list
      })
  }

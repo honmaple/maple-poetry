@@ -73,9 +73,9 @@
     <q-item>
       <q-item-section>
         <q-item-label>
-          <q-btn flat icon="sort" label="默认排序" @click="handleQuery({sort: 'desc'})" v-if="!form.sort" />
-          <q-btn flat icon="sort" color="primary" label="倒序" @click="handleQuery({sort: 'random'})" v-else-if="form.sort == 'desc'" />
-          <q-btn flat icon="sort" color="primary" label="随机" @click="handleRemoveQuery('sort')" v-else />
+          <q-btn flat :icon="icon.matSort" label="默认排序" @click="handleQuery({sort: 'desc'})" v-if="!form.sort" />
+          <q-btn flat :icon="icon.matSort" color="primary" label="倒序" @click="handleQuery({sort: 'random'})" v-else-if="form.sort == 'desc'" />
+          <q-btn flat :icon="icon.matSort" color="primary" label="随机" @click="handleRemoveQuery('sort')" v-else />
         </q-item-label>
       </q-item-section>
       <q-space />
@@ -83,7 +83,7 @@
         <q-item-label>
           <q-input dense outlined label="输入诗词标题" @keyup.enter="handlePoems" v-model="result.form.title">
             <template v-slot:append>
-              <q-icon name="search" style="cursor: pointer;" @click="handlePoems" />
+              <q-icon :name="icon.matSearch" style="cursor: pointer;" @click="handlePoems" />
             </template>
           </q-input>
         </q-item-label>
@@ -130,6 +130,10 @@
         <q-item-section class="items-center">
           <q-pagination direction-links boundary-numbers
                         size="sm"
+                        :icon-first="icon.matFirstPage"
+                        :icon-last="icon.matLastPage"
+                        :icon-prev="icon.matKeyboardArrowLeft"
+                        :icon-next="icon.matKeyboardArrowRight"
                         :max="paginationTotal"
                         :max-pages="5"
                         :model-value="result.pagination.page"
@@ -143,9 +147,9 @@
 
 <script setup>
  import { computed, ref, watch, onMounted } from 'vue';
- import { getCurrentInstance } from 'vue'
+ import useApp from '../composables';
 
- const { proxy } = getCurrentInstance()
+ const { app, icon } = useApp()
 
  const collectionResult = ref({
      list: [],
@@ -184,7 +188,7 @@
  })
 
  const form = computed(() => {
-     return proxy.$route.query
+     return app.$route.query
  })
 
  const result = ref({
@@ -215,21 +219,21 @@
  }
 
  const handleQuery = (query) => {
-     proxy.$router.push({path: "/poems", query: {...form.value, ...query}})
+     app.$router.push({path: "/poems", query: {...form.value, ...query}})
  }
 
  const handleRemoveQuery = (key) => {
      let query = {...form.value}
      delete query[key]
-     proxy.$router.push({path: "/poems", query: query})
+     app.$router.push({path: "/poems", query: query})
  }
 
  const handleAuthor = (row) => {
-     proxy.$router.push({path: `/authors/${row.id}`})
+     app.$router.push({path: `/authors/${row.id}`})
  }
 
  const handlePoem = (row) => {
-     proxy.$router.push({path: `/poems/${row.id}`})
+     app.$router.push({path: `/poems/${row.id}`})
  }
 
  const handlePoemTitle = (row) => {
@@ -242,7 +246,7 @@
 
  const handleTags = () => {
      const params = {}
-     proxy.$api.get("/api/tags", {
+     app.$api.get("/api/tags", {
          params: params
      }).then(resp => {
          tagResult.value.list = resp.data.data.list
@@ -256,7 +260,7 @@
      if (form.value.dynasty) {
          params.dynasty = form.value.dynasty
      }
-     proxy.$api.get("/api/authors", {
+     app.$api.get("/api/authors", {
          params: params
      }).then(resp => {
          authorResult.value.list = resp.data.data.list
@@ -266,7 +270,7 @@
  }
 
  const handleDynasties = () => {
-     proxy.$api.get("/api/dynasties").then(resp => {
+     app.$api.get("/api/dynasties").then(resp => {
          dynastyResult.value.list = resp.data.data.list
          dynastyResult.value.pagination.rowsNumber = resp.data.data.total
          dynastyResult.value.pagination.rowsPerPage = resp.data.data.limit
@@ -278,7 +282,7 @@
      if (form.value.dynasty) {
          params.dynasty = form.value.dynasty
      }
-     proxy.$api.get("/api/collections", {
+     app.$api.get("/api/collections", {
          params: params
      }).then(resp => {
          collectionResult.value.list = resp.data.data.list
@@ -296,7 +300,7 @@
          params.page = result.value.pagination.page
      }
      result.value.loading = true
-     proxy.$api.get("/api/poems", {
+     app.$api.get("/api/poems", {
          params: params
      }).then(resp => {
          result.value.list = resp.data.data.list
