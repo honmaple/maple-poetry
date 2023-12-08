@@ -124,7 +124,7 @@
 
  const handlePagination = (page) => {
      result.value.pagination.page = page
-     handleAuthors()
+     handleQuery({page: page})
  }
 
  const handleQuery = (query) => {
@@ -145,9 +145,6 @@
      const params = {...form.value}
      if (result.value.form.name) {
          params.name = result.value.form.name
-     }
-     if (result.value.pagination.page > 1) {
-         params.page = result.value.pagination.page
      }
 
      result.value.loading = true
@@ -170,7 +167,6 @@
 
  watch(() => form.value,
        (newQuery, oldQuery) => {
-           result.value.pagination.page = 1
            handleAuthors()
        }
  )

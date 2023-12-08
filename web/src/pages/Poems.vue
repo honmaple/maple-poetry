@@ -215,7 +215,7 @@
 
  const handlePagination = (page) => {
      result.value.pagination.page = page
-     handlePoems()
+     handleQuery({page: page})
  }
 
  const handleQuery = (query) => {
@@ -296,9 +296,7 @@
      if (result.value.form.title) {
          params.title = result.value.form.title
      }
-     if (result.value.pagination.page > 1) {
-         params.page = result.value.pagination.page
-     }
+
      result.value.loading = true
      app.$api.get("/api/poems", {
          params: params
@@ -313,7 +311,6 @@
 
  watch(() => form.value,
        (newQuery, oldQuery) => {
-           result.value.pagination.page = 1
            if (newQuery.dynasty != oldQuery.dynasty) {
                handleAuthors()
                handleCollections()

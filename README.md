@@ -11,6 +11,10 @@ cd maple-poetry
 ```
 docker build -t maple-poetry .
 ```
+or use 
+```
+docker pull honmaple/poetry
+```
 3. Create database and load data
 ```
 docker run --rm -it -v `pwd`/example:/opt/poetry -v `pwd`/chinese-poetry:/opt/chinese-poetry maple-poetry ash

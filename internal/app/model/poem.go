@@ -33,6 +33,10 @@ func (db *DB) GetPoems(opt *Option) (Poems, PageInfo, error) {
 		q = q.Where("title LIKE ?", fmt.Sprintf("%%%s%%", title))
 	}
 
+	// if content := opt.GetString("content"); content != "" {
+	//	q = q.Where("content LIKE ?", fmt.Sprintf("%%%s%%", content))
+	// }
+
 	if author := opt.GetInt("author"); author > 0 {
 		q = q.Where("author_id = ?", author)
 	} else if author := opt.GetString("author"); author != "" {
