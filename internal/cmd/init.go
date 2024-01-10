@@ -26,7 +26,7 @@ var (
 			if path := clx.String("path"); path != "" {
 				defaultApp.Config.Set("dataset.path", path)
 			}
-			if err := model.Init(defaultApp.Config, defaultApp.DB.DB); err != nil {
+			if err := model.Init(defaultApp.Config, defaultApp.DB); err != nil {
 				return err
 			}
 			if clx.Bool("insert") {

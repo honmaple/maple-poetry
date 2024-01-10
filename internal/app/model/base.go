@@ -4,12 +4,11 @@ import (
 	"poetry/internal/app/config"
 
 	"github.com/spf13/viper"
-	"gorm.io/gorm"
 )
 
 type (
 	DB struct {
-		*gorm.DB
+		*config.DB
 		config *config.Config
 	}
 	BaseModel struct {
@@ -58,11 +57,11 @@ func NewOption(m map[string]interface{}) *Option {
 	return &Option{cf}
 }
 
-func New(conf *config.Config, db *gorm.DB) *DB {
+func New(conf *config.Config, db *config.DB) *DB {
 	return &DB{DB: db, config: conf}
 }
 
-func Init(conf *config.Config, db *gorm.DB) error {
+func Init(conf *config.Config, db *config.DB) error {
 	return db.Debug().AutoMigrate(
 		new(Tag),
 		new(Poem),

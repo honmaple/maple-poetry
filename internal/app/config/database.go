@@ -12,6 +12,8 @@ import (
 	"gorm.io/gorm/schema"
 )
 
+type DB = gorm.DB
+
 func NewDB(conf *Config) (*gorm.DB, error) {
 	var (
 		db  *gorm.DB

@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"poetry/internal/app/config"
-	"poetry/internal/app/model"
 	"poetry/internal/app/router"
 
 	"github.com/honmaple/forest"
@@ -17,7 +16,7 @@ import (
 )
 
 type App struct {
-	DB     *model.DB
+	DB     *config.DB
 	Log    *config.Logger
 	Config *config.Config
 }
@@ -124,7 +123,7 @@ func (app *App) Init(file string, strs ...string) error {
 	if err != nil {
 		return err
 	}
-	app.DB = model.New(conf, db)
+	app.DB = db
 	app.Log = log
 	return nil
 }

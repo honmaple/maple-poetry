@@ -3,11 +3,11 @@
     <q-item-label header>关于</q-item-label>
     <q-item>
       <q-item-section avatar>
-        <q-item-label overline>作者:</q-item-label>
+        <q-item-label overline>项目:</q-item-label>
       </q-item-section>
       <q-item-section >
         <q-item-label>
-          <a href="https://github.com/honmaple" target="_blank">honmaple</a>
+          <a href="https://github.com/honmaple/maple-poetry" target="_blank">maple-poetry</a>
         </q-item-label>
       </q-item-section>
     </q-item>
@@ -17,7 +17,7 @@
       </q-item-section>
       <q-item-section>
         <q-item-label>
-          本项目基于<a href="https://github.com/chinese-poetry/chinese-poetry" target="_blank">chinese-poetry</a>实现
+          本项目数据来源于 <a href="https://github.com/chinese-poetry/chinese-poetry" target="_blank">chinese-poetry</a>
         </q-item-label>
       </q-item-section>
     </q-item>
