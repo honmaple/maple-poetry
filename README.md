@@ -21,6 +21,7 @@ docker run --rm -it -v `pwd`/example:/opt/poetry -v `pwd`/chinese-poetry:/opt/ch
 /opt/poetry # poetry init --path /opt/chinese-poetry --insert
 ```
 喝杯奶茶并且等待片刻，`example` 目录下将会生成一个`poetry.db` 数据库文件
+
 4. 运行服务
 ```
 docker run --name maple-poetry -d -p 8000:8000 -v `pwd`/example:/opt/poetry maple-poetry

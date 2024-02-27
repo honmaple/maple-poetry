@@ -1,5 +1,16 @@
 // app global css in SCSS form
 
+.shici-about {
+    a {
+        color: inherit;
+        text-decoration: none;
+        &:hover {
+            color: $primary;
+            font-weight: 500;
+        }
+    }
+}
+
 .shici-layout {
     max-width: 800px;
     margin: 0 auto;
@@ -16,7 +27,7 @@
     max-width: 50%;
     .q-btn__content {
         flex-wrap: nowrap;
-        align-items: flex-start;
+        align-items: center;
         text-align: left;
     }
 }
@@ -25,7 +36,7 @@
     max-width: 50%;
     .q-btn__content {
         flex-wrap: nowrap;
-        align-items: flex-start;
+        align-items: center;
         text-align: right;
     }
 }

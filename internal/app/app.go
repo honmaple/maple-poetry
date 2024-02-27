@@ -46,7 +46,7 @@ func (app *App) Run(webFS fs.FS) error {
 
 	srv.Use(middleware.Logger(), middleware.CorsWithConfig(corsConfig))
 	{
-		srv.GET("/", func(c forest.Context) error {
+		srv.GET("/*", func(c forest.Context) error {
 			return c.FileFromFS("index.html", http.FS(webFS))
 		})
 		srv.GET("/icons/*", func(c forest.Context) error {

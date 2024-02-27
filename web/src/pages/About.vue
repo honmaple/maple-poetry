@@ -1,6 +1,16 @@
 <template>
-  <q-list class="shici-layout">
+  <q-list class="shici-layout shici-about">
     <q-item-label header>关于</q-item-label>
+    <q-item>
+      <q-item-section avatar>
+        <q-item-label overline>作者:</q-item-label>
+      </q-item-section>
+      <q-item-section >
+        <q-item-label>
+          <a href="https://github.com/honmaple" target="_blank">honmaple</a>
+        </q-item-label>
+      </q-item-section>
+    </q-item>
     <q-item>
       <q-item-section avatar>
         <q-item-label overline>项目:</q-item-label>
